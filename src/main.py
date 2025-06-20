@@ -17,17 +17,17 @@ def main():
 
     spark = spark_builder.get_spark("Product Dimension SCD")
     # 1) Read
-    df = etl.read_daily_data(spark, "gs://spark-datasets-gds/products", proc_date)
+    df = etl.read_daily_data(spark, "gs://spark-datasets-gds-kg/products", proc_date)
     # 2) Quality
     deequ_checks.run_quality_checks(spark, df)
     # 3) Sculpt SCD2
     df2 = etl.sculpt_scd2(df, proc_date)
     # 4) Stage
-    writer.write_to_staging(df2, "mythic-aloe-457912-d5", "product_dwh", "dim_products_staging")
+    writer.write_to_staging(df2, "voltaic-cirrus-398711", "product_dwh", "dim_products_staging")
     # 5) Merge
-    writer.merge_scd2_bq(spark, "mythic-aloe-457912-d5", "product_dwh", "dim_products_staging", "dim_products")
+    writer.merge_scd2_bq(spark, "voltaic-cirrus-398711", "product_dwh", "dim_products_staging", "dim_products")
     # 6) Archive
-    writer.archive_processed_csv("spark-datasets-gds", proc_date)
+    writer.archive_processed_csv("spark-datasets-gds-kg", proc_date)
 
     spark.stop()
     sys.exit(0)
